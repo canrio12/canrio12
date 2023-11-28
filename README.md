@@ -1,32 +1,48 @@
-#include <LiquidCrystal_I2C.h>
+const int trigPin = 3;
+const int echoPin = 2;
 
-LiquidCrystal_I2C lcd(0x27, 16, 2);
 long duration;
 int distance;
+
 void setup() {
-  pinMode(8, OUTPUT); // Sets the trigPin as an Output
-  pinMode(7, INPUT); // Sets the echoPin as an Input
-  Serial.begin(9600); // Starts the serial 
-  lcd.init();
-  lcd.backlight();
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);  
+  pinMode(13, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  Serial.begin(9600);
 }
+
 void loop() {
-  // Clears the trigPin
-  digitalWrite(8, LOW);
-  delayMicroseconds(2);
-  // Sets the trigPin on HIGH state for 10 micro seconds
-  digitalWrite(8, HIGH);
+  
+  digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
-  digitalWrite(8, LOW);
-  // Reads the echoPin, returns the sound wave travel time in microseconds
-  duration = pulseIn(7, HIGH);
-  // Calculating the distance
+  digitalWrite(trigPin, LOW);
+
+  
+  duration = pulseIn(echoPin, HIGH);
+
+
   distance = duration * 0.034 / 2;
-  // Prints the distance on the Serial Monitor
+
+  if (distance > 100) {
+    noTone(13);
+    digitalWrite(6, HIGH);
+    digitalWrite(7, LOW);
+    digitalWrite(8, LOW);
+  } else if (distance <= 100 && distance >=10) {
+    noTone(13);
+    digitalWrite(6, LOW);
+    digitalWrite(7, HIGH);
+    digitalWrite(8, LOW);
+  } else if (distance < 10) {
+    tone(13,1000);
+    digitalWrite(6, LOW);
+    digitalWrite(7, LOW);
+    digitalWrite(8, HIGH);
+  }
   Serial.print("Distance: ");
   Serial.println(distance);
-  lcd.setCursor(0,0);
-  lcd.print(" Distance : ");
-  lcd.println(distance);
-  delay(1000);
+  delay(250);
 }
